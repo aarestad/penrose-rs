@@ -43,6 +43,7 @@ enum RobinsonTriangleType {
     ThickRight,
 }
 
+
 struct RobinsonTriangle {
     triangle_type: RobinsonTriangleType,
     apex: (f64, f64),
@@ -64,6 +65,73 @@ impl RobinsonTriangle {
             RobinsonTriangleType::ThinLeft | RobinsonTriangleType::ThinRight => 0.4 * PI, // 72 degrees
             RobinsonTriangleType::ThickLeft | RobinsonTriangleType::ThickRight => 0.3 * PI, // 54 degrees
         }
+    }
+
+    fn decompose(&self) -> [RobinsonTriangle; 2] {
+        let new_point: (f64, f64) = match self.triangle_type {
+            RobinsonTriangleType::ThinLeft => todo!(),
+            RobinsonTriangleType::ThinRight => todo!(),
+            RobinsonTriangleType::ThickLeft => todo!(),
+            RobinsonTriangleType::ThickRight => todo!(),
+        };
+
+        let base_points = self.base_points();
+
+        let triangle_one = match self.triangle_type {
+            RobinsonTriangleType::ThinLeft => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThickRight,
+                apex: new_point,
+                leg_length: ((new_point.1 - self.apex.1).powf(2.0) + (new_point.0 - self.apex.0).powf(2.0)).sqrt(),
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThinRight => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThickLeft,
+                apex: new_point,
+                leg_length: ((new_point.1 - self.apex.1).powf(2.0) + (new_point.0 - self.apex.0).powf(2.0)).sqrt(),
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThickLeft => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThinRight,
+                apex: base_points[0],
+                leg_length: self.leg_length,
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThickRight => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThinLeft,
+                apex: base_points[1],
+                leg_length: self.leg_length,
+                rotation: todo!(),
+            }
+        };
+
+        let triangle_two = match self.triangle_type {
+            RobinsonTriangleType::ThinLeft => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThinLeft,
+                apex: base_points[0],
+                leg_length: (base_points[0].1 - base_points[1].1).abs(),
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThinRight => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThinRight,
+                apex: base_points[1],
+                leg_length: (base_points[0].1 - base_points[1].1).abs(),
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThickLeft => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThickLeft,
+                apex: new_point,
+                leg_length: (base_points[1].0 - new_point.0).abs(),
+                rotation: todo!(),
+            },
+            RobinsonTriangleType::ThickRight => RobinsonTriangle {
+                triangle_type: RobinsonTriangleType::ThickRight,
+                apex: new_point,
+                leg_length: (base_points[1].0 - new_point.0).abs(),
+                rotation: todo!(),
+            }
+        };
+
+        [triangle_one, triangle_two]
     }
 
     fn base_points(&self) -> [(f64, f64); 2] {
