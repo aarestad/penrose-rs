@@ -27,7 +27,7 @@ fn start() {
         .unwrap();
 
     let t1 = RobinsonTriangle {
-        triangle_type: RobinsonTriangleType::Thin,
+        triangle_type: RobinsonTriangleType::ThinLeft,
         apex: (300.0, 350.0),
         leg_length: 100.0,
         rotation: PI / 4.0,
@@ -37,8 +37,10 @@ fn start() {
 }
 
 enum RobinsonTriangleType {
-    Thin,
-    Thick,
+    ThinLeft,
+    ThinRight,
+    ThickLeft,
+    ThickRight,
 }
 
 struct RobinsonTriangle {
@@ -52,15 +54,15 @@ struct RobinsonTriangle {
 impl RobinsonTriangle {
     const fn vertex_angle(&self) -> f64 {
         match self.triangle_type {
-            RobinsonTriangleType::Thin => 0.1 * PI,  // 36 degrees
-            RobinsonTriangleType::Thick => 0.2 * PI, // 72 degrees
+            RobinsonTriangleType::ThinLeft | RobinsonTriangleType::ThinRight => 0.1 * PI, // 36 degrees
+            RobinsonTriangleType::ThickLeft | RobinsonTriangleType::ThickRight => 0.2 * PI, // 72 degrees
         }
     }
 
     const fn base_angle(&self) -> f64 {
         match self.triangle_type {
-            RobinsonTriangleType::Thin => 0.4 * PI,  // 72 degrees
-            RobinsonTriangleType::Thick => 0.3 * PI, // 54 degrees
+            RobinsonTriangleType::ThinLeft | RobinsonTriangleType::ThinRight => 0.4 * PI, // 72 degrees
+            RobinsonTriangleType::ThickLeft | RobinsonTriangleType::ThickRight => 0.3 * PI, // 54 degrees
         }
     }
 
@@ -79,12 +81,12 @@ impl RobinsonTriangle {
 
         // reflect Ys across x=apex.x since positive Y is down in graphics coordinates
         let base_point_1 = (
-            self.leg_length * theta_one.cos() + self.apex.0,
+            self.apex.0 + self.leg_length * theta_one.cos(),
             self.apex.1 - self.leg_length * theta_one.sin(),
         );
 
         let base_point_2 = (
-            self.leg_length * theta_two.cos() + self.apex.0,
+            self.apex.0 + self.leg_length * theta_two.cos(),
             self.apex.1 - self.leg_length * theta_two.sin(),
         );
 
