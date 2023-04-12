@@ -44,7 +44,7 @@ impl RobinsonTriangle {
         }
     }
 
-    const fn base_angle(&self) -> f64 {
+    const fn _base_angle(&self) -> f64 {
         match self.triangle_type {
             RobinsonTriangleType::ThinLeft | RobinsonTriangleType::ThinRight => 0.4 * PI, // 72 degrees
             RobinsonTriangleType::ThickLeft | RobinsonTriangleType::ThickRight => 0.3 * PI, // 54 degrees
