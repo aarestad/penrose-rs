@@ -2,7 +2,6 @@
 
 use std::f64::consts::PI;
 use wasm_bindgen::prelude::*;
-use web_sys::CanvasRenderingContext2d;
 
 #[allow(unused_imports)]
 use web_sys::console;
@@ -25,7 +24,6 @@ pub struct RobinsonTriangle {
 
 #[wasm_bindgen]
 impl RobinsonTriangle {
-    #[wasm_bindgen]
     pub fn new() -> RobinsonTriangle {
         RobinsonTriangle {
             triangle_type: RobinsonTriangleType::ThinLeft,
@@ -144,7 +142,6 @@ impl RobinsonTriangle {
         [base_point_1, base_point_2]
     }
 
-    #[wasm_bindgen]
     pub fn points(&self) -> Box<[f64]> {
         let base_points = self.base_points();
         Box::from([self.apex.0, self.apex.1, base_points[0].0, base_points[0].1, base_points[1].0, base_points[1].1])
