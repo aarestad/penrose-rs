@@ -7,35 +7,6 @@ use web_sys::CanvasRenderingContext2d;
 #[allow(unused_imports)]
 use web_sys::console;
 
-#[wasm_bindgen(start)]
-fn start() {
-    console_error_panic_hook::set_once();
-
-    let document = web_sys::window().unwrap().document().unwrap();
-
-    let canvas = document.get_element_by_id("canvas").unwrap();
-    let canvas: web_sys::HtmlCanvasElement = canvas
-        .dyn_into::<web_sys::HtmlCanvasElement>()
-        .map_err(|_| ())
-        .unwrap();
-
-    let ctx = canvas
-        .get_context("2d")
-        .unwrap()
-        .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()
-        .unwrap();
-
-    let t1 = RobinsonTriangle {
-        triangle_type: RobinsonTriangleType::ThinLeft,
-        apex: (300.0, 350.0),
-        leg_length: 100.0,
-        rotation: PI / 4.0,
-    };
-
-    t1.draw(&ctx);
-}
-
 enum RobinsonTriangleType {
     ThinLeft,
     ThinRight,
@@ -44,15 +15,27 @@ enum RobinsonTriangleType {
 }
 
 
-struct RobinsonTriangle {
+#[wasm_bindgen]
+pub struct RobinsonTriangle {
     triangle_type: RobinsonTriangleType,
     apex: (f64, f64),
     leg_length: f64,
     rotation: f64, // angle of the altitude relative to the X-axis; [0, 2*PI)
 }
 
-// see https://en.wikipedia.org/wiki/Penrose_tiling#Rhombus_tiling_(P3)
+#[wasm_bindgen]
 impl RobinsonTriangle {
+    #[wasm_bindgen]
+    pub fn new() -> RobinsonTriangle {
+        RobinsonTriangle {
+            triangle_type: RobinsonTriangleType::ThinLeft,
+            apex: (300.0, 350.0),
+            leg_length: 100.0,
+            rotation: PI / 4.0,
+        }
+    }
+
+    // see https://en.wikipedia.org/wiki/Penrose_tiling#Rhombus_tiling_(P3)
     const fn vertex_angle(&self) -> f64 {
         match self.triangle_type {
             RobinsonTriangleType::ThinLeft | RobinsonTriangleType::ThinRight => 0.1 * PI, // 36 degrees
@@ -161,16 +144,9 @@ impl RobinsonTriangle {
         [base_point_1, base_point_2]
     }
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) {
-        ctx.begin_path();
-
-        let [base_point_1, base_point_2] = self.base_points();
-
-        ctx.move_to(self.apex.0, self.apex.1);
-        ctx.line_to(base_point_1.0, base_point_1.1);
-        ctx.line_to(base_point_2.0, base_point_2.1);
-        ctx.line_to(self.apex.0, self.apex.1);
-
-        ctx.stroke();
+    #[wasm_bindgen]
+    pub fn points(&self) -> Box<[f64]> {
+        let base_points = self.base_points();
+        Box::from([self.apex.0, self.apex.1, base_points[0].0, base_points[0].1, base_points[1].0, base_points[1].1])
     }
 }
